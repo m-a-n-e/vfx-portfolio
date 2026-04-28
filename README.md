@@ -1,4 +1,4 @@
-# 🎬 VFX Portfolio | Emanuel Dörner
+# 🎬 VFX Portfolio | Emanuel Doerner
 
 Meu playground pessoal para fundir **VFX/Motion Design** com **desenvolvimento Front-end**. O objetivo aqui é estudar a integração de ambientes 3D imersivos na web.
 

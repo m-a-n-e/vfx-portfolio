@@ -2,7 +2,11 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { PROJECTS } from '../constants';
 
-export function Overlay() {
+interface OverlayProps {
+  onScrollTo?: (id: string) => void;
+}
+
+export function Overlay({ onScrollTo }: OverlayProps) {
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -10,18 +14,16 @@ export function Overlay() {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const viewportHeight = window.innerHeight;
-      const carouselArea = viewportHeight * 8;
+      const carouselArea = viewportHeight * 10;
       
-      // Cálculo do percentual relativo apenas à área do carrossel
-      // O limite superior é carouselArea - viewportHeight para o último item ficar no centro
-      const scrollLimit = carouselArea - viewportHeight;
+      // O progresso total termina em 8 viewports, deixando 2 viewports de "descanso" no último vídeo (1 estático + 1 fade)
+      const scrollLimit = viewportHeight * 8;
       const percent = Math.min(Math.max(scrollY / scrollLimit, 0), 1);
       
       const index = Math.min(Math.round(percent * (PROJECTS.length - 1)), PROJECTS.length - 1);
       setActiveProjectIndex(index);
 
       // O overlay deve ser visível enquanto estivermos na área de scroll do carrossel
-      // Damos uma margem de segurança
       setIsVisible(scrollY < carouselArea - viewportHeight * 0.5);
     };
 
@@ -45,14 +47,14 @@ export function Overlay() {
           <h1 className="font-mono text-[10px] font-medium tracking-[0.3em] text-white/40 md:text-xs">
             VFX PORTFOLIO / 2026
           </h1>
-          <p className="font-sans text-base font-light tracking-tight text-white md:text-lg">
+          <p className="font-mono text-base font-light tracking-tight text-white md:text-lg">
             EMANUEL <span className="text-white/50">DÖRNER</span>
           </p>
         </div>
         <nav className="pointer-events-auto hidden gap-8 font-mono text-[10px] tracking-widest text-white/50 md:flex">
-          <button className="transition-colors hover:text-white">PROJECTS</button>
-          <button className="transition-colors hover:text-white">ABOUT</button>
-          <button className="transition-colors hover:text-white">CONTACT</button>
+          <button onClick={() => onScrollTo?.('projects')} className="transition-colors hover:text-white uppercase">Projects</button>
+          <button onClick={() => onScrollTo?.('about')} className="transition-colors hover:text-white uppercase">About</button>
+          <button onClick={() => onScrollTo?.('contact')} className="transition-colors hover:text-white uppercase">Contact</button>
         </nav>
       </header>
 
@@ -99,10 +101,26 @@ export function Overlay() {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="hidden flex-col items-center gap-4 md:flex">
-          <span className="font-mono text-[10px] tracking-widest text-white/30 [writing-mode:vertical-lr]">
-            SCROLL TO EXPLORE
-          </span>
+        <div className="hidden flex-col items-center gap-6 md:flex">
+          <div className="flex flex-col items-center font-mono text-[9px] font-bold tracking-[0.2em] text-white/30 leading-[1.8] uppercase">
+            <span>S</span>
+            <span>C</span>
+            <span>R</span>
+            <span>O</span>
+            <span>L</span>
+            <span>L</span>
+            <span className="my-2 h-1 w-1 rounded-full bg-white/10" />
+            <span>T</span>
+            <span>O</span>
+            <span className="my-2 h-1 w-1 rounded-full bg-white/10" />
+            <span>E</span>
+            <span>X</span>
+            <span>P</span>
+            <span>L</span>
+            <span>O</span>
+            <span>R</span>
+            <span>E</span>
+          </div>
           <div className="h-24 w-px overflow-hidden bg-white/10">
             <motion.div
               className="h-full w-full bg-white/50"

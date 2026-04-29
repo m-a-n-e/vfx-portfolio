@@ -17,16 +17,18 @@ export function ThreeCanvas({ onProjectClick }: ThreeCanvasProps) {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const viewportHeight = window.innerHeight;
-      const carouselHeight = viewportHeight * 8; // Sincronizado com o 800vh do App.tsx
+      const totalArea = viewportHeight * 10; // 1000vh
+      const carouselEnd = viewportHeight * 8; // Onde o movimento termina
       
-      // O progresso do carrossel deve ir de 0 a 1 dentro dos 800vh
-      const percent = Math.min(scrollY / (carouselHeight - viewportHeight), 1);
+      // O progresso do carrossel atinge 1.0 aos 8 viewports
+      const percent = Math.min(scrollY / carouselEnd, 1);
       scrollRef.current = percent;
 
-      // Fade out do canvas quando começar a entrar nas outras seções
-      if (scrollY > carouselHeight - viewportHeight) {
-        const fadeStart = carouselHeight - viewportHeight;
-        const fadeEnd = carouselHeight;
+      // Fade out do canvas começa apenas após o período de "dwell" do último vídeo
+      // Agora começa aos 9 viewports (sobra 1 viewport para o fade total)
+      if (scrollY > totalArea - viewportHeight) {
+        const fadeStart = totalArea - viewportHeight;
+        const fadeEnd = totalArea;
         const fadePercent = 1 - (scrollY - fadeStart) / (viewportHeight);
         setOpacity(Math.max(fadePercent, 0));
       } else {

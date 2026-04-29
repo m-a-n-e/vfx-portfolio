@@ -398,7 +398,7 @@ export default function App() {
                 </div>
 
                 <div className="p-12 border-t border-white/10 flex justify-center font-mono text-[10px] tracking-widest text-white/40 uppercase">
-                  <span>© 2026 Emanuel Dörner</span>
+                  <span>© 2026 Emanuel Doerner</span>
                 </div>
               </div>
             </section>

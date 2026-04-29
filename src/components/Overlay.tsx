@@ -48,8 +48,7 @@ export function Overlay({ onScrollTo }: OverlayProps) {
             VFX PORTFOLIO / 2026
           </h1>
           <p className="font-mono text-base font-light tracking-tight text-white md:text-lg">
-            EMANUEL <span className="text-white/50">DÖRNER</span>
-          </p>
+            EMANUEL <span className="text-white/50">DOERNER</span>          </p>
         </div>
         <nav className="pointer-events-auto hidden gap-8 font-mono text-[10px] tracking-widest text-white/50 md:flex">
           <button onClick={() => onScrollTo?.('projects')} className="transition-colors hover:text-white uppercase">Projects</button>

@@ -144,7 +144,7 @@ export function ProjectDetail({ project, onBack }: ProjectDetailProps) {
                 <div className="space-y-4">
                   <div>
                     <p className="font-mono text-[9px] text-white/20 uppercase mb-1">Director / VFX</p>
-                    <p className="text-sm text-white/70">Emanuel Dörner</p>
+                    <p className="text-sm text-white/70">Emanuel Doerner</p>
                   </div>
                   <div>
                     <p className="font-mono text-[9px] text-white/20 uppercase mb-1">Sound Design</p>

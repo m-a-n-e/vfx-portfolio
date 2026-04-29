@@ -16,13 +16,12 @@ import { Mail, Instagram, Linkedin, ArrowRight, Quote } from 'lucide-react';
 function TextShapeFill({ children, className = "" }: { children: React.ReactNode, className?: string }) {
   return (
     <motion.span 
-      // Adicionado padding-right para compensar a inclinação do itálico e evitar corte
-      className={`relative inline-block pr-4 overflow-hidden group/fill ${className}`}
+      className={`relative inline-block overflow-hidden group/fill ${className}`}
       initial="initial"
       whileHover="hover"
     >
       {/* Camada Base (Cinza) */}
-      <span className="text-white/20 whitespace-nowrap">{children}</span>
+      <span className="text-white/20 whitespace-nowrap pr-[0.3em]">{children}</span>
       
       {/* Camada de Revelação (Branco) */}
       <motion.span 
@@ -31,7 +30,7 @@ function TextShapeFill({ children, className = "" }: { children: React.ReactNode
           hover: { clipPath: "inset(0 0 0 0)" }
         }}
         transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
-        className="absolute top-0 left-0 text-white select-none pointer-events-none whitespace-nowrap"
+        className="absolute top-0 left-0 text-white select-none pointer-events-none whitespace-nowrap pr-[0.3em]"
       >
         {children}
       </motion.span>
@@ -43,26 +42,66 @@ function SkillCard({ skill, index }: { skill: any, index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
+  
+  // Valores para a posição absoluta do mouse para o círculo de revelação
+  const mousePosX = useMotionValue(0);
+  const mousePosY = useMotionValue(0);
+  const isHovered = useMotionValue(0);
 
   const mouseX = useSpring(x, { stiffness: 150, damping: 20 });
   const mouseY = useSpring(y, { stiffness: 150, damping: 20 });
+  const circleRadius = useSpring(isHovered, { stiffness: 100, damping: 30 });
 
   const rotateX = useTransform(mouseY, [-0.5, 0.5], [15, -15]);
   const rotateY = useTransform(mouseX, [-0.5, 0.5], [-15, 15]);
+  
+  const clipPath = useTransform(
+    [mousePosX, mousePosY, circleRadius],
+    ([px, py, radius]) => `circle(${radius * 150}% at ${px}px ${py}px)`
+  );
 
   function onMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
+    
+    // Rotação 3D
     const relativeX = (e.clientX - rect.left) / rect.width - 0.5;
     const relativeY = (e.clientY - rect.top) / rect.height - 0.5;
     x.set(relativeX);
     y.set(relativeY);
+
+    // Posição para o círculo
+    mousePosX.set(e.clientX - rect.left);
+    mousePosY.set(e.clientY - rect.top);
+    isHovered.set(1);
   }
 
   function onMouseLeave() {
     x.set(0);
     y.set(0);
+    isHovered.set(0);
   }
+
+  const CardContent = ({ variant }: { variant: 'base' | 'reveal' }) => (
+    <div className={`flex h-full flex-col justify-between space-y-6 rounded-xl border p-8 transition-colors ${
+      variant === 'base' 
+        ? "border-white/10 bg-white/[0.03] text-white" 
+        : "border-white bg-white text-black"
+    }`}>
+      <div style={{ transform: "translateZ(50px)" }} className="space-y-4">
+        <div className={`h-px w-full ${variant === 'base' ? 'bg-white/10' : 'bg-black/10'}`} />
+        <h4 className={`font-mono text-xs tracking-[0.3em] uppercase ${variant === 'base' ? 'text-white/70' : 'text-black/70'}`}>
+          {skill.title}
+        </h4>
+      </div>
+      <p style={{ transform: "translateZ(30px)" }} className={`text-justify text-xs leading-relaxed ${variant === 'base' ? 'text-white/30' : 'text-black/60'}`}>
+        {skill.description}
+      </p>
+      {variant === 'base' && (
+        <div style={{ transform: "translateZ(-20px)" }} className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-50" />
+      )}
+    </div>
+  );
 
   return (
     <motion.div
@@ -74,20 +113,22 @@ function SkillCard({ skill, index }: { skill: any, index: number }) {
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.8 }}
       style={{ perspective: 1000 }}
-      className="group relative"
+      className="group relative h-full cursor-none"
     >
       <motion.div
         style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-        className="relative h-full space-y-6 rounded-xl border border-white/10 bg-white/[0.03] p-8 transition-colors hover:bg-white/[0.06] hover:border-white/20"
+        className="relative h-full"
       >
-        <div style={{ transform: "translateZ(50px)" }} className="space-y-4">
-          <div className="h-px w-full bg-white/10" />
-          <h4 className="font-mono text-xs tracking-[0.3em] text-white/70 uppercase">{skill.title}</h4>
-        </div>
-        <p style={{ transform: "translateZ(30px)" }} className="text-justify text-xs leading-relaxed text-white/30 group-hover:text-white/50 transition-colors">
-          {skill.description}
-        </p>
-        <div style={{ transform: "translateZ(-20px)" }} className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* Camada Base (Escura) */}
+        <CardContent variant="base" />
+
+        {/* Camada de Revelação (Branca) */}
+        <motion.div
+          style={{ clipPath, transformStyle: "preserve-3d" }}
+          className="absolute inset-0 z-10"
+        >
+          <CardContent variant="reveal" />
+        </motion.div>
       </motion.div>
     </motion.div>
   );

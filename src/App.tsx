@@ -279,7 +279,7 @@ export default function App() {
               }
             }} />
             
-            <div className="pointer-events-none relative h-[1000vh] w-full" />
+            <div className="pointer-events-none relative h-[950vh] w-full" />
             
             {/* Trajectory Section */}
             <section id="about" className="relative z-20 bg-black px-8 py-24 md:px-16 border-t border-white/10">
@@ -412,3 +412,4 @@ export default function App() {
     </main>
   );
 }
+

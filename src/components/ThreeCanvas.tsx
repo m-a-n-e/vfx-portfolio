@@ -17,7 +17,7 @@ export function ThreeCanvas({ onProjectClick }: ThreeCanvasProps) {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const viewportHeight = window.innerHeight;
-      const totalArea = viewportHeight * 10; // 1000vh
+      const totalArea = viewportHeight * 9.5; // 950vh
       const carouselEnd = viewportHeight * 8; // Onde o movimento termina
       
       // O progresso do carrossel atinge 1.0 aos 8 viewports
@@ -25,7 +25,7 @@ export function ThreeCanvas({ onProjectClick }: ThreeCanvasProps) {
       scrollRef.current = percent;
 
       // Fade out do canvas começa apenas após o período de "dwell" do último vídeo
-      // Agora começa aos 9 viewports (sobra 1 viewport para o fade total)
+      // Agora começa aos 8.5 viewports (sobra 1 viewport para o fade total)
       if (scrollY > totalArea - viewportHeight) {
         const fadeStart = totalArea - viewportHeight;
         const fadeEnd = totalArea;

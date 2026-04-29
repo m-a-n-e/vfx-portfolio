@@ -3,6 +3,7 @@ import { motion, useSpring } from 'motion/react';
 
 export function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
 
   const cursorX = useSpring(0, { damping: 20, stiffness: 250 });
   const cursorY = useSpring(0, { damping: 20, stiffness: 250 });
@@ -17,7 +18,6 @@ export function CustomCursor() {
       const target = e.target as HTMLElement;
       if (!target) return;
 
-      // Verifica se o elemento ou seus pais são clicáveis
       const isClickable = 
         target.closest('button') || 
         target.closest('a') || 
@@ -26,12 +26,24 @@ export function CustomCursor() {
       setIsHovering(!!isClickable);
     };
 
+    // Custom events for more control (like with iframes)
+    const hideCursor = () => setIsHidden(true);
+    const showCursor = () => setIsHidden(false);
+
     window.addEventListener('mousemove', moveMouse);
     window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('vfx-hide-cursor', hideCursor);
+    window.addEventListener('vfx-show-cursor', showCursor);
+    window.addEventListener('blur', hideCursor);
+    window.addEventListener('focus', showCursor);
 
     return () => {
       window.removeEventListener('mousemove', moveMouse);
       window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('vfx-hide-cursor', hideCursor);
+      window.removeEventListener('vfx-show-cursor', showCursor);
+      window.removeEventListener('blur', hideCursor);
+      window.removeEventListener('focus', showCursor);
     };
   }, [cursorX, cursorY]);
 
@@ -43,12 +55,14 @@ export function CustomCursor() {
         y: cursorY,
         translateX: '-50%',
         translateY: '-50%',
+        opacity: isHidden ? 0 : 1,
       }}
     >
       <motion.div
         animate={{
           width: isHovering ? 80 : 20,
           height: isHovering ? 80 : 20,
+          scale: isHidden ? 0 : 1,
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className="rounded-full bg-white"

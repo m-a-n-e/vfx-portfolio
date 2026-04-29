@@ -68,20 +68,24 @@ export function ProjectDetail({ project, onBack }: ProjectDetailProps) {
                 </motion.div>
               </div>
 
-              {/* O vídeo agora é "o quadrado", ocupando o espaço do grid sem padding extra */}
-              <div className="border-b lg:border-b-0 bg-white/[0.02] relative min-h-[400px] lg:min-h-full overflow-hidden">
+              {/* O vídeo agora é um Iframe do YouTube ocupando o espaço do grid */}
+              <div 
+                onMouseEnter={() => window.dispatchEvent(new CustomEvent('vfx-hide-cursor'))}
+                onMouseLeave={() => window.dispatchEvent(new CustomEvent('vfx-show-cursor'))}
+                className="border-b lg:border-b-0 bg-black relative min-h-[400px] lg:min-h-full overflow-hidden"
+              >
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="absolute inset-0 w-full h-full"
                 >
-                  {/* Placeholder que simula o vídeo ocupando todo o espaço */}
-                  <div className="w-full h-full flex items-center justify-center bg-white/5">
-                    <p className="font-mono text-[10px] tracking-widest text-white/10 uppercase italic">
-                      [ Cinematic Content ]
-                    </p>
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/80 to-transparent" />
+                  <iframe
+                    className="w-full h-full border-0"
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0&controls=1&rel=0&modestbranding=1"
+                    title={project.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
                 </motion.div>
               </div>
             </div>

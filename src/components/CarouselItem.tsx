@@ -15,6 +15,44 @@ export function CarouselItem({ index, total, title, category, scrollProgressRef,
   const meshRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
+  // Estabilização do elemento de vídeo
+  const video = useMemo(() => {
+    const v = document.createElement('video');
+    v.src = '/rick.mp4';
+    v.crossOrigin = 'Anonymous';
+    v.loop = true;
+    v.muted = true;
+    v.playsInline = true;
+    v.autoplay = true; // Força o início automático
+    return v;
+  }, []);
+
+  const videoTexture = useMemo(() => {
+    const tex = new THREE.VideoTexture(video);
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.format = THREE.RGBAFormat;
+    return tex;
+  }, [video]);
+
+  // Garante que o vídeo continue tocando
+  useEffect(() => {
+    const handlePlay = () => {
+      video.play().catch(err => console.log("Erro ao tocar vídeo:", err));
+    };
+
+    handlePlay();
+
+    // Tenta tocar novamente em caso de interação global se estiver pausado
+    window.addEventListener('click', handlePlay, { once: true });
+    window.addEventListener('touchstart', handlePlay, { once: true });
+
+    return () => {
+      window.removeEventListener('click', handlePlay);
+      window.removeEventListener('touchstart', handlePlay);
+    };
+  }, [video]);
+
   // Atualiza o cursor do mouse globalmente quando passa sobre um card
   useEffect(() => {
     document.body.style.cursor = hovered ? 'pointer' : 'auto';
@@ -34,6 +72,11 @@ export function CarouselItem({ index, total, title, category, scrollProgressRef,
 
   useFrame((state) => {
     if (!meshRef.current) return;
+
+    // Garante que o Three.js saiba que a textura precisa ser atualizada
+    if (video.readyState >= video.HAVE_CURRENT_DATA) {
+      videoTexture.needsUpdate = true;
+    }
 
     lerpScroll.current = THREE.MathUtils.lerp(lerpScroll.current, scrollProgressRef.current, 0.08);
     const scroll = lerpScroll.current;
@@ -82,24 +125,12 @@ export function CarouselItem({ index, total, title, category, scrollProgressRef,
         >
           <planeGeometry args={[4, 2.25]} />
           <meshStandardMaterial 
-            color={hovered ? "#666" : "#444"}
-            metalness={0.8}
-            roughness={0.2}
-            emissive={hovered ? "#333" : "#111"}
+            map={videoTexture}
+            metalness={0.5}
+            roughness={0.5}
+            emissive={hovered ? "#333" : "#000"}
             side={THREE.DoubleSide}
           />
-          
-          {/* Inner Wireframe for depth and "tech" look */}
-          <mesh position={[0, 0, 0.01]}>
-            <planeGeometry args={[3.9, 2.15]} />
-            <meshBasicMaterial 
-              color="#ffffff" 
-              wireframe 
-              transparent 
-              opacity={0.2} 
-              side={THREE.DoubleSide}
-            />
-          </mesh>
         </mesh>
       </group>
     </group>

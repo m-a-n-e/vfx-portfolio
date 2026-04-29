@@ -14,9 +14,9 @@ export function Overlay({ onScrollTo }: OverlayProps) {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const viewportHeight = window.innerHeight;
-      const carouselArea = viewportHeight * 10;
+      const carouselArea = viewportHeight * 9.5;
       
-      // O progresso total termina em 8 viewports, deixando 2 viewports de "descanso" no último vídeo (1 estático + 1 fade)
+      // O progresso total termina em 8 viewports
       const scrollLimit = viewportHeight * 8;
       const percent = Math.min(Math.max(scrollY / scrollLimit, 0), 1);
       
